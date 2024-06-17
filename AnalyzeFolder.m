@@ -57,6 +57,8 @@ parse(p,path,varargin{:});
 isRelative = p.Results.isRelative;
 tubeParameter = p.Results.TubeParameter;
 imgType = p.Results.ImgType;
+numOfImages = 0;
+imagesCompleted = 0;
 ax = p.Results.axis;
 if ax == 0
     ax = gca;
@@ -81,13 +83,20 @@ if ~singleFile
     filesInDir = filesAndFolders(~([filesAndFolders.isdir]));
     numOfFiles = length(filesInDir);
     results_array = cell(numOfFiles, 1);
+    % Increases the numebr of files eveyrtime there is an image
+    for i = 1:numOfFiles
+        [~,~,ext] = fileparts(filesInDir(i).name);
+        if ismember(lower(ext), allowedFileTypes)
+            numOfImages = numOfImages + 1;
+        end
+    end
     for i = 1:numOfFiles
          % For loop through the files in the directory and analyze each file
         if strcmp(startFile,filesInDir(i).name)
             % Check if we found the start file
             startAnalyzing = true;
         end
-        [~,~,ext] = fileparts(filesInDir(i).name); 
+        [~,~,ext] = fileparts(filesInDir(i).name);
         if ~ismember(lower(ext),allowedFileTypes)
             % If file is not an image file, skip it
             continue
@@ -97,7 +106,8 @@ if ~singleFile
                 % This is in case someone decides the are done analyzing images but
                 % doesn't want to lose their progress.
                 img = imread(path+filesInDir(i).name);
-                img_results = AnalyzeImage(img,tubeParameter, 'ImgType', imgType, 'axis',ax,'Style',style);
+                img_results = AnalyzeImage(img,tubeParameter, 'ImgType', imgType, 'axis',ax,'Style',style,'numberOfFiles', numOfImages, 'numberCompleted', imagesCompleted);
+                imagesCompleted = imagesCompleted + 1;
                 results_array{i} = img_results;
             catch e
                 errorMessage = sprintf('Error in function %s() at line %d.\n\nError Message:\n%s', ...
@@ -111,7 +121,7 @@ if ~singleFile
 else
     % We are only analyzing a single file
     img = imread(path);
-    img_results = AnalyzeImage(img,tubeParameter, 'ImgType', imgType, 'axis',ax,'Style',style);
+    img_results = AnalyzeImage(img,tubeParameter, 'ImgType', imgType, 'axis',ax,'Style',style, 'numberOfFiles', 1);
     results_array = {img_results};
 end
 

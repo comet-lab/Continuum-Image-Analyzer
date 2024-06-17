@@ -9,6 +9,7 @@ function output = AnalyzeImage(Image,varargin)
 %   'Style' - Name-Argument {'line','points'} which denotes if you want to
 %   analyze a notch using lines or points.
 %   'ImgType' - Name-Argument {'notches', 'curvature'} to select if analyzing curve or notches 
+%   
 
 %****** INPUT PARSING *********************
 % default values
@@ -17,6 +18,8 @@ style = 'line';
 styleOptions = {'line','points'};
 imgType = 'curvature';
 imgOptions = {'notches', 'curvature'};
+numOfFiles = 1;
+imagesCompleted = 0;
 
 p = inputParser();
 addRequired(p,'Image');
@@ -24,16 +27,22 @@ addOptional(p,'TubeParameter',tubeParameter,@isnumeric);
 addOptional(p,'axis',0);
 addParameter(p,'Style',style, @(x) any(validatestring(x,styleOptions)));
 addOptional(p,'ImgType', imgType, @(x) any(validatestring(x,imgOptions)));
+addOptional(p,'numberOfFiles',numOfFiles);
+addOptional(p,'numberCompleted', imagesCompleted);
 parse(p,path,varargin{:});
 
 tubeParameter = p.Results.TubeParameter;
 ax = p.Results.axis;
+numOfFiles = p.Results.numberOfFiles;
+imagesCompleted = p.Results.numberCompleted;
 if ax == 0
     ax = gca;
 end
 style = p.Results.Style;
 imgType = p.Results.ImgType;
 %*********************************************
+counterString = imagesCompleted + "/" + numOfFiles + " Completed";
+counterAnnotation = annotation('textbox', [0 0 1 1], 'String', counterString, 'FitBoxToText', 'on','FontSize', 10, 'Color', "black", 'FontWeight', 'bold', 'EdgeColor',"none");
 
 switch imgType
     case 'notches'
@@ -54,8 +63,8 @@ switch imgType
         % prompt to rotate image
         Image = RotateImage(Image, 'axis',ax);
         
-        % 'select notch' to zoom in 
-        [scaleImage, roi] = SelectRegion(Image, 'axis',ax, 'title',  "Select area to zoom in to set scale");
+        % 'select notch' to zoom in
+        [scaleImage, roi] = SelectRegion(Image, 'axis',ax, 'title', "Select area to zoom in to set scale");
         
         % make line to set scale
         scale = SetScale(scaleImage, 'axis', ax, 'Style', style, 'OD', tubeParameter)
@@ -67,6 +76,12 @@ switch imgType
         r_vecPX = AnalyzeArc(arcImage, 'axis', ax, 'Style', style);
         r_vec = r_vecPX * scale;
         output = 1/(r_vec + tubeParameter/2);
+end
+
+delete(counterAnnotation);
 
 end
+
+
+
 
