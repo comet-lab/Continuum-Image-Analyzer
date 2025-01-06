@@ -1,4 +1,4 @@
-function radius_vec = AnalayzeArc(zoomedImg,varargin)
+function radius_vec = AnalayzeArc(i, zoomedImg,varargin)
 %ANALAYZENOTCH Has the user select 4 points to determine the angle the two
 %cut sections are in relation to one another.
 %
@@ -28,6 +28,11 @@ style = p.Results.Style;
 radius_vec = 0;
 line_vec = zeros(2,2);
 I = imshow(zoomedImg,'Parent',ax);
+% Get the size of the image
+[height, width, ~] = size(zoomedImg);
+
+counterString = "Image #" + i;
+counterAnnotation = annotation('textbox', [0 0 1 1], 'String', counterString, 'FitBoxToText', 'on','FontSize', 20, 'Color', "black", 'FontWeight', 'bold', 'EdgeColor',"none");
 
 for i = 1:1
     while(1)
@@ -37,8 +42,11 @@ for i = 1:1
                 line = drawpolyline('Color','magenta','Parent',ax);
                 pos = line.Position;
             case 'points'
+                axis([1, width/10, 1, height]);
                 point1 = drawpoint('Color','magenta','Parent',ax);
+                axis([width/10 * 4.5, width/10 * 5.5, 1, height]);
                 point2 = drawpoint('Color','red','Parent',ax);
+                axis([width/10 * 9, width, 1, height]);
                 point3 = drawpoint('Color','blue','Parent',ax);
                 pos = [point1.Position(1) point1.Position(2);
                     point2.Position(1) point2.Position(2);
@@ -46,7 +54,7 @@ for i = 1:1
                 line = drawpolyline('Position',pos,'Color','magenta');
                 delete(point1); delete(point2); delete(point3);
         end
-        
+        axis([1, width, 1, height]);
         choice = listdlg('PromptString',{'Are you happy with your curve'},...
             'ListString',{'Yes','No'});
         
@@ -66,6 +74,7 @@ for i = 1:1
         delete(line)
         
         if choice==1
+            delete(counterAnnotation);
             break;
         else
             delete(circle);

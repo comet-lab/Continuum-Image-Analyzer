@@ -24,14 +24,14 @@ newImage = origImage;
 while(1)  
     choice = listdlg('PromptString',{'Rotate Image by 90deg?'},...
         'ListString',{'Yes','No'});
-    
+
     if choice==1
         newImage = imrotate(newImage, 90);
         I = imshow(newImage,'Parent',ax);
     else
         break;
     end
-    
+
 end
 
 end

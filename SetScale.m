@@ -1,4 +1,4 @@
-function scale = AnalayzeNotch(notchImage,varargin)
+function scale = AnalayzeNotch(i, notchImage,varargin)
 %ANALAYZENOTCH Has the user select 4 points to determine the angle the two
 %cut sections are in relation to one another.
 %
@@ -31,6 +31,8 @@ scale = 0;
 line_vec = zeros(2,2);
 I = imshow(notchImage,'Parent',ax);
 title(ax, "Select 2 points to set the diameter of the tube");
+counterString = "Image #" + i;
+counterAnnotation = annotation('textbox', [0 0 1 1], 'String', counterString, 'FitBoxToText', 'on','FontSize', 20, 'Color', "black", 'FontWeight', 'bold', 'EdgeColor',"none");
 while(1)
     switch style
         case 'line'
@@ -50,6 +52,7 @@ while(1)
     choice = listdlg('PromptString',{'Are you happy with your line'},...
         'ListString',{'Yes','No'});
     if choice==1
+        delete(counterAnnotation);
         break;
     end
     delete(line)

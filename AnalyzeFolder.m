@@ -81,6 +81,7 @@ if ~singleFile
     filesInDir = filesAndFolders(~([filesAndFolders.isdir]));
     numOfFiles = length(filesInDir);
     results_array = cell(numOfFiles, 1);
+    set_scale = 0.0;
     for i = 1:numOfFiles
          % For loop through the files in the directory and analyze each file
         if strcmp(startFile,filesInDir(i).name)
@@ -97,7 +98,7 @@ if ~singleFile
                 % This is in case someone decides the are done analyzing images but
                 % doesn't want to lose their progress.
                 img = imread(path+filesInDir(i).name);
-                img_results = AnalyzeImage(img,tubeParameter, 'ImgType', imgType, 'axis',ax,'Style',style);
+                [set_scale, img_results] = AnalyzeImage(i, set_scale, img,tubeParameter, 'ImgType', imgType, 'axis',ax,'Style',style);
                 results_array{i} = img_results;
             catch e
                 errorMessage = sprintf('Error in function %s() at line %d.\n\nError Message:\n%s', ...

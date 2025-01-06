@@ -1,4 +1,4 @@
-function [newImage rectPosition] = SelectRegion(origImage,varargin)
+function [newImage rectPosition] = SelectRegion(i, origImage, varargin)
 %SELECTNOTCH Takes in an image and allows the user to select a region. The
 %output is a zoomed in picture of that region.
 %   'PreviousRegions' - Optional Argument is a nx4 array indicating previous
@@ -31,6 +31,8 @@ txt = p.Results.title;
 
 I = imshow(origImage,'Parent',ax);
 title(txt);
+counterString = "Image #" + i;
+counterAnnotation = annotation('textbox', [0 0 1 1], 'String', counterString, 'FitBoxToText', 'on','FontSize', 20, 'Color', "black", 'FontWeight', 'bold', 'EdgeColor',"none");
 
 % Display previously selected regions
 for i= 1:size(previousRegions,1)
@@ -50,6 +52,7 @@ while(1)
     choice = listdlg('PromptString',{'Confirm zoom'},...
         'ListString',{'Yes','No'});
     if choice==1
+        delete(counterAnnotation);
         break;
     end
     delete(roi);
